@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 
@@ -114,8 +115,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         name: 'Home',
       );
 
-      // Add your template creation navigation/logic here
-      // Navigator.pushNamed(context, '/create-template');
+      Navigator.pushNamed(context, '/createTemplate');
     } catch (e) {
       developer.log(
         'Error in template creation: $e',
@@ -149,8 +149,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         name: 'Home',
       );
 
-      // Add your message sending navigation/logic here
-      // Navigator.pushNamed(context, '/send-message');
+
     } catch (e) {
       developer.log('Error in message sending: $e', name: 'Home', level: 1000);
       _setError('Failed to send message');
@@ -254,7 +253,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: theme.colorScheme.primary.withOpacity(0.3),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -285,7 +284,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           Text(
             'Create and manage your message templates',
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),
@@ -352,7 +351,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: backgroundColor.withOpacity(0.3),
+                color: backgroundColor.withValues(alpha: 0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -418,7 +417,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         color: theme.colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.error.withOpacity(0.3)),
+        border: Border.all(
+          color: theme.colorScheme.error.withValues(alpha: 0.3),
+        ),
       ),
       child: Row(
         children: [
