@@ -39,7 +39,6 @@ class _CreateTemplateState extends State<CreateTemplate>
   bool _contentEmpty = false;
   bool _nameEmpty = false;
   bool _isFill = false;
-  bool _createTemplate = false;
   bool _loadingTemplate = false;
   bool _showValidationErrors = false;
 
@@ -364,20 +363,20 @@ class _CreateTemplateState extends State<CreateTemplate>
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              colorScheme.primaryContainer.withOpacity(0.1),
-              colorScheme.secondaryContainer.withOpacity(0.1),
+              colorScheme.primaryContainer.withValues(alpha: 0.1),
+              colorScheme.secondaryContainer.withValues(alpha: 0.1),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: colorScheme.outline.withOpacity(0.2),
+            color: colorScheme.outline.withValues(alpha: 0.2),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: colorScheme.shadow.withOpacity(0.05),
+              color: colorScheme.shadow.withValues(alpha: 0.05),
               offset: const Offset(0, 2),
               blurRadius: 8,
               spreadRadius: 0,
@@ -392,7 +391,7 @@ class _CreateTemplateState extends State<CreateTemplate>
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: colorScheme.primary.withOpacity(0.1),
+                    color: colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -418,7 +417,7 @@ class _CreateTemplateState extends State<CreateTemplate>
             Text(
               'Ejemplo de plantilla personalizada:',
               style: TextStyle(
-                color: colorScheme.onSurface.withOpacity(0.8),
+                color: colorScheme.onSurface.withValues(alpha: 0.8),
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
               ),
@@ -427,14 +426,18 @@ class _CreateTemplateState extends State<CreateTemplate>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: colorScheme.outline.withOpacity(0.3)),
+                border: Border.all(
+                  color: colorScheme.outline.withValues(alpha: 0.3),
+                ),
               ),
               child: Text(
-                '"Hola, buenas tardes señor /nombre"',
+                '"Hola, buenas tardes señor, /nombre"',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   fontStyle: FontStyle.italic,
                   color: colorScheme.primary,
@@ -446,7 +449,7 @@ class _CreateTemplateState extends State<CreateTemplate>
             Text(
               'Las palabras después de "/" son campos editables que puedes personalizar al usar la plantilla.',
               style: TextStyle(
-                color: colorScheme.onSurface.withOpacity(0.7),
+                color: colorScheme.onSurface.withValues(alpha: 0.7),
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -496,7 +499,9 @@ class _CreateTemplateState extends State<CreateTemplate>
                         : colorScheme.primary,
               ),
               filled: true,
-              fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              fillColor: colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.5,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -572,12 +577,12 @@ class _CreateTemplateState extends State<CreateTemplate>
               hintText:
                   'Escribe tu plantilla aquí...\nUsa /campo para crear campos editables',
               hintStyle: TextStyle(
-                color: colorScheme.onSurface.withOpacity(0.6),
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
                 fontSize: 14,
                 height: 1.4,
               ),
               counterStyle: TextStyle(
-                color: colorScheme.onSurface.withOpacity(0.6),
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
                 fontSize: 12,
               ),
               errorText:
@@ -586,7 +591,9 @@ class _CreateTemplateState extends State<CreateTemplate>
                       : null,
               contentPadding: const EdgeInsets.all(16),
               filled: true,
-              fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              fillColor: colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.5,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -594,7 +601,7 @@ class _CreateTemplateState extends State<CreateTemplate>
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
-                  color: colorScheme.outline.withOpacity(0.3),
+                  color: colorScheme.outline.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -618,7 +625,6 @@ class _CreateTemplateState extends State<CreateTemplate>
     );
   }
 
-
   Widget _buildFloatingActionButton(ColorScheme colorScheme) {
     return ScaleTransition(
       scale: _fabScaleAnimation,
@@ -630,7 +636,7 @@ class _CreateTemplateState extends State<CreateTemplate>
                   key: const ValueKey('loading'),
                   heroTag: 'create_template_loading', // Agregado heroTag único
                   onPressed: null,
-                  backgroundColor: colorScheme.primary.withOpacity(0.7),
+                  backgroundColor: colorScheme.primary.withValues(alpha: 0.7),
                   icon: SizedBox(
                     width: 20,
                     height: 20,

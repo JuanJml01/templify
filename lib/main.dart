@@ -4,20 +4,16 @@ import 'package:templify/presenters/user_presenter.dart';
 import 'package:templify/theme/theme.dart';
 import 'package:templify/view/create_template.dart';
 import 'package:templify/view/home.dart';
+import 'package:templify/view/select_template.dart';
+import 'package:templify/view/send_templates.dart';
 
 void main() async {
-  // 1. Haz que main sea async
   WidgetsFlutterBinding.ensureInitialized();
-  final userPresenter = UserPresenter(); // 3. Crea la instancia del presenter
-  await userPresenter
-      .initialize(); // 4. Llama y espera a que se complete la inicialización
+  final userPresenter = UserPresenter();
+  await userPresenter.initialize();
 
   runApp(
-    ChangeNotifierProvider.value(
-      // 5. Usa ChangeNotifierProvider.value
-      value: userPresenter, //    porque ya tienes la instancia creada
-      child: const MyApp(),
-    ),
+    ChangeNotifierProvider.value(value: userPresenter, child: const MyApp()),
   );
 }
 
@@ -35,6 +31,8 @@ class MyApp extends StatelessWidget {
       routes: {
         "/home": (context) => Home(),
         "/createTemplate": (context) => CreateTemplate(),
+        "/selectTemplate": (context) => SelectTemplate(),
+        "/sendTemplate": (context) => SendTemplates(),
       },
       initialRoute: "/home",
       themeMode: ThemeMode.system,
