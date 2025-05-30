@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:templify/theme/theme.dart';
+import 'package:templify/view/create_template.dart';
 import 'package:templify/view/home.dart';
 
 void main() {
@@ -17,7 +18,10 @@ class MyApp extends StatelessWidget {
       theme: themeLight,
       darkTheme: themeDark,
       home: Home(),
-      routes: {"/home": (context) => Home()},
+      routes: {
+        "/home": (context) => Home(),
+        "/createTemplate": (context) => CreateTemplate(),
+      },
       initialRoute: "/home",
       themeMode: ThemeMode.system,
     );
