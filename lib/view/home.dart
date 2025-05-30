@@ -149,6 +149,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         name: 'Home',
       );
 
+      Navigator.pushNamed(context, "/selectTemplate");
+
 
     } catch (e) {
       developer.log('Error in message sending: $e', name: 'Home', level: 1000);
