@@ -15,7 +15,6 @@ class Template {
     }
   }
 
-
   factory Template.fromJson(Map<String, dynamic> json) {
     final name = json['name'] as String?;
     final text = json['text'] as String?;
