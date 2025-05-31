@@ -1,16 +1,13 @@
 # templify
 
-A new Flutter project.
+Aplicación para crear y gestionar plantillas de texto con campos dinámicos.  
 
-## Getting Started
+## Características  
+- **Crear plantillas**: Diseña textos con campos personalizados (ej: `"Hola, /nombre"`).  
+- **Rellenar campos**: Al seleccionar una plantilla, se muestra un formulario para completar los valores.  
+- **Previsualización**: Visualiza el texto final antes de compartirlo.  
+- **Compartir fácilmente**: Exporta el resultado a cualquier aplicación de mensajería (WhatsApp, Telegram, SMS, etc.).  
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Pantallas  
+1. **Editor de plantillas**: Crea y guarda nuevas plantillas.  
+2. **Generador de mensajes**: Elige una plantilla, completa los campos y comparte el texto desde el menú de compartir del sistema.  
