@@ -318,7 +318,7 @@ class _SettingsState extends State<Settings> with TickerProviderStateMixin {
                 controller: _apiController,
                 focusNode: _apiFocusNode,
                 enabled: !_isLoading,
-                obscureText: true,
+                obscureText: false,
                 decoration: InputDecoration(
                   hintText: 'Ingresa tu API key (opcional)',
                   hintStyle: TextStyle(

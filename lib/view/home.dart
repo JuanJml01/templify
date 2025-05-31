@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 
-
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -36,22 +35,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     _logScreenInitialization();
   }
 
-
   void _initializeAnimations() {
     try {
-      
       _fadeController = AnimationController(
         duration: const Duration(milliseconds: 800),
         vsync: this,
       );
 
-      
       _slideController = AnimationController(
         duration: const Duration(milliseconds: 1000),
         vsync: this,
       );
 
-      
       _scaleController = AnimationController(
         duration: const Duration(milliseconds: 150),
         vsync: this,
@@ -77,7 +72,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
       );
 
-      
       _fadeController.forward();
       _slideController.forward();
 
@@ -92,7 +86,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-
   void _logScreenInitialization() {
     final size = MediaQuery.sizeOf(context);
     developer.log(
@@ -100,7 +93,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       name: 'Home',
     );
   }
-
 
   Future<void> _handleCreateTemplate() async {
     try {
@@ -110,7 +102,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         _isLoading = true;
         _errorMessage = null;
       });
-
 
       await Future.delayed(const Duration(milliseconds: 200));
 
@@ -134,7 +125,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       }
     }
   }
-
 
   Future<void> _handleSendMessage() async {
     try {
@@ -165,12 +155,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-
   void _setError(String message) {
     setState(() => _errorMessage = message);
     developer.log('Error set: $message', name: 'Home', level: 900);
   }
-
 
   void _dismissError() {
     setState(() => _errorMessage = null);
@@ -248,7 +236,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-
   Widget _buildHeader(ThemeData theme, Size size) {
     return SlideTransition(
       position: _slideAnimation,
@@ -314,7 +301,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-
   Widget _buildActionButtons(ThemeData theme, Size size) {
     return SlideTransition(
       position: _slideAnimation,
@@ -344,7 +330,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
- 
   Widget _buildAnimatedButton({
     required VoidCallback onPressed,
     required Color backgroundColor,
@@ -427,7 +412,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
- 
   Widget _buildErrorDisplay(ThemeData theme) {
     if (_errorMessage == null) return const SizedBox.shrink();
 
