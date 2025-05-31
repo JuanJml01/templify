@@ -274,7 +274,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
           // Title
           Text(
-            'Template Manager',
+            'Templify',
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: theme.colorScheme.onSurface,
@@ -284,7 +284,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
           // Subtitle
           Text(
-            'Create and manage your message templates',
+            'Crea y administra tus plantillas de mensajes',
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
@@ -306,7 +306,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             backgroundColor: theme.colorScheme.primary,
             foregroundColor: theme.colorScheme.onPrimary,
             icon: Icons.add_circle_outline_rounded,
-            label: 'Create Template',
+            label: 'Crear Plantilla',
             size: size,
             delay: const Duration(milliseconds: 200),
           ),
@@ -316,7 +316,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             backgroundColor: theme.colorScheme.secondary,
             foregroundColor: theme.colorScheme.onSecondary,
             icon: Icons.send_rounded,
-            label: 'Send Message',
+            label: 'Enviar mensaje',
             size: size,
             delay: const Duration(milliseconds: 400),
           ),
