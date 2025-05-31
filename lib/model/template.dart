@@ -29,6 +29,7 @@ class Template {
   }
 
   String get name => _name;
+  String get text => _text;
 
   /// Extracts the unique field names from the template text.
   /// Fields are identified by the pattern '/word'.

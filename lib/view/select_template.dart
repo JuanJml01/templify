@@ -76,14 +76,17 @@ class _SelectTemplateState extends State<SelectTemplate>
 
   void _initializeSlideAnimations(int count) {
     _slideAnimations = List.generate(count, (index) {
+      final startTime = (index * 0.1).clamp(0.0, 0.7);
+      final endTime = (0.8 + (index * 0.05)).clamp(startTime + 0.1, 1.0);
+      
       return Tween<Offset>(
         begin: const Offset(0.3, 0),
         end: Offset.zero,
       ).animate(CurvedAnimation(
         parent: _staggerAnimationController,
         curve: Interval(
-          index * 0.1,
-          0.8 + (index * 0.05),
+          startTime,
+          endTime,
           curve: Curves.easeOutCubic,
         ),
       ));
@@ -133,12 +136,116 @@ class _SelectTemplateState extends State<SelectTemplate>
     }
   }
 
+  Future<void> _deleteTemplate(dynamic template) async {
+    try {
+      HapticFeedback.mediumImpact();
+      
+      final confirmed = await _showDeleteConfirmationDialog(template.name);
+      if (!confirmed) {
+        debugPrint('$_logTag: Template deletion cancelled by user');
+        return;
+      }
+
+      await context.read<UserPresenter>().removeTemplate(template);
+      
+      // Update filtered templates list
+      setState(() {
+        _filteredTemplates.remove(template);
+      });
+      
+      _showSuccessSnackBar('Plantilla "${template.name}" eliminada');
+      debugPrint('$_logTag: Template deleted successfully: ${template.name}');
+    } catch (e) {
+      debugPrint('$_logTag: Error deleting template: $e');
+      _showErrorSnackBar('Error al eliminar la plantilla');
+    }
+  }
+
+  Future<bool> _showDeleteConfirmationDialog(String templateName) async {
+    return await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        return AlertDialog(
+          backgroundColor: colorScheme.surface,
+          surfaceTintColor: colorScheme.surfaceTint,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: colorScheme.error,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Confirmar eliminación',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            '¿Estás seguro de que deseas eliminar la plantilla "$templateName"? Esta acción no se puede deshacer.',
+            style: TextStyle(
+              fontSize: 16,
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'Cancelar',
+                style: TextStyle(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: FilledButton.styleFrom(
+                backgroundColor: colorScheme.error,
+                foregroundColor: colorScheme.onError,
+              ),
+              child: const Text(
+                'Eliminar',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        );
+      },
+    ) ?? false;
+  }
+
   void _showErrorSnackBar(String message) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
           behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.error,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    }
+  }
+
+  void _showSuccessSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.green,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
@@ -404,6 +511,25 @@ class _SelectTemplateState extends State<SelectTemplate>
                   ],
                 ),
               ),
+              // Delete button
+              IconButton(
+                onPressed: () => _deleteTemplate(template),
+                icon: Icon(
+                  Icons.delete_outline_rounded,
+                  size: isCompactHeight ? 20 : 22,
+                  color: colorScheme.error,
+                ),
+                tooltip: 'Eliminar plantilla',
+                style: IconButton.styleFrom(
+                  backgroundColor: colorScheme.errorContainer.withValues(alpha:  0.1),
+                  foregroundColor: colorScheme.error,
+                  minimumSize: Size(
+                    isCompactHeight ? 36 : 40,
+                    isCompactHeight ? 36 : 40,
+                  ),
+                ),
+              ),
+              SizedBox(width: isCompactHeight ? 8 : 12),
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: isCompactHeight ? 16 : 18,
