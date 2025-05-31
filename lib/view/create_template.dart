@@ -4,8 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:templify/model/template.dart';
 import 'package:templify/presenters/user_presenter.dart';
 
-/// Enhanced Create Template screen with Google Material Design principles
-/// Implements animations, responsive design, and improved UX
 class CreateTemplate extends StatefulWidget {
   const CreateTemplate({super.key});
 
@@ -15,7 +13,6 @@ class CreateTemplate extends StatefulWidget {
 
 class _CreateTemplateState extends State<CreateTemplate>
     with TickerProviderStateMixin {
-  // Controllers and Focus Nodes
   late final TextEditingController _nameController;
   late final TextEditingController _contentController;
   late final FocusNode _nameFocus;
@@ -23,26 +20,22 @@ class _CreateTemplateState extends State<CreateTemplate>
   late final FocusNode _addFocus;
   late final WidgetStatesController _contentStates;
 
-  // Animation Controllers
   late final AnimationController _slideAnimationController;
   late final AnimationController _scaleAnimationController;
   late final AnimationController _fadeAnimationController;
   late final AnimationController _fabAnimationController;
 
-  // Animations
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _scaleAnimation;
   late final Animation<double> _fadeAnimation;
   late final Animation<double> _fabScaleAnimation;
 
-  // State variables
   bool _contentEmpty = false;
   bool _nameEmpty = false;
   bool _isFill = false;
   bool _loadingTemplate = false;
   bool _showValidationErrors = false;
 
-  // Constants for responsive design
   static const double _maxContentWidth = 600.0;
   static const double _compactHeightThreshold = 850.0;
   static const double _standardSpacing = 24.0;
@@ -56,7 +49,6 @@ class _CreateTemplateState extends State<CreateTemplate>
     _startEntryAnimations();
   }
 
-  /// Initialize all controllers and focus nodes
   void _initializeControllers() {
     _nameController = TextEditingController();
     _contentController = TextEditingController();
@@ -65,12 +57,10 @@ class _CreateTemplateState extends State<CreateTemplate>
     _addFocus = FocusNode();
     _contentStates = WidgetStatesController();
 
-    // Add listeners for real-time validation
     _nameController.addListener(_validateInputs);
     _contentController.addListener(_validateInputs);
   }
 
-  /// Initialize all animation controllers and animations
   void _initializeAnimations() {
     // Slide animation for entrance
     _slideAnimationController = AnimationController(
@@ -87,7 +77,6 @@ class _CreateTemplateState extends State<CreateTemplate>
       ),
     );
 
-    // Scale animation for interactive elements
     _scaleAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -99,7 +88,6 @@ class _CreateTemplateState extends State<CreateTemplate>
       ),
     );
 
-    // Fade animation for content transitions
     _fadeAnimationController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -111,7 +99,6 @@ class _CreateTemplateState extends State<CreateTemplate>
       ),
     );
 
-    // FAB animation
     _fabAnimationController = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
@@ -124,7 +111,6 @@ class _CreateTemplateState extends State<CreateTemplate>
     );
   }
 
-  /// Start entrance animations
   void _startEntryAnimations() {
     Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) {
@@ -174,7 +160,6 @@ class _CreateTemplateState extends State<CreateTemplate>
         _loadingTemplate = true;
       });
 
-      // Haptic feedback for better UX
       HapticFeedback.lightImpact();
 
       final template = Template(
@@ -208,7 +193,6 @@ class _CreateTemplateState extends State<CreateTemplate>
     }
   }
 
-  /// Show error snack bar
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -224,7 +208,6 @@ class _CreateTemplateState extends State<CreateTemplate>
     );
   }
 
-  /// Show success snack bar
   void _showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -271,7 +254,6 @@ class _CreateTemplateState extends State<CreateTemplate>
     );
   }
 
-  /// Build app bar with enhanced styling
   PreferredSizeWidget _buildAppBar(ColorScheme colorScheme) {
     return AppBar(
       elevation: 0,
@@ -304,7 +286,6 @@ class _CreateTemplateState extends State<CreateTemplate>
     );
   }
 
-  /// Build main body content
   Widget _buildBody(
     Size size,
     ColorScheme colorScheme,
@@ -352,7 +333,6 @@ class _CreateTemplateState extends State<CreateTemplate>
     return 20.0;
   }
 
-  /// Build explanation card with enhanced styling
   Widget _buildExplanationCard(ColorScheme colorScheme, Size size) {
     return ScaleTransition(
       scale: _scaleAnimation,
@@ -460,7 +440,6 @@ class _CreateTemplateState extends State<CreateTemplate>
     );
   }
 
-  /// Build name input field with enhanced styling
   Widget _buildNameInput(ColorScheme colorScheme, Size size) {
     return ScaleTransition(
       scale: _scaleAnimation,
@@ -522,7 +501,6 @@ class _CreateTemplateState extends State<CreateTemplate>
     );
   }
 
-  /// Build content input field with enhanced styling
   Widget _buildContentInput(
     ColorScheme colorScheme,
     Size size,

@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:templify/presenters/user_presenter.dart';
 
-/// Enhanced template selection screen with modern UI and smooth animations
-/// Follows Google Material Design principles with responsive layout
 class SelectTemplate extends StatefulWidget {
   const SelectTemplate({super.key});
 
@@ -19,7 +17,7 @@ class _SelectTemplateState extends State<SelectTemplate>
   late AnimationController _staggerAnimationController;
   late Animation<double> _fadeAnimation;
   late List<Animation<Offset>> _slideAnimations;
-  
+
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
   bool _isSearchVisible = false;
@@ -39,23 +37,22 @@ class _SelectTemplateState extends State<SelectTemplate>
         duration: const Duration(milliseconds: 600),
         vsync: this,
       );
-      
+
       _staggerAnimationController = AnimationController(
         duration: const Duration(milliseconds: 1200),
         vsync: this,
       );
 
-      _fadeAnimation = Tween<double>(
-        begin: 0.0,
-        end: 1.0,
-      ).animate(CurvedAnimation(
-        parent: _fadeAnimationController,
-        curve: Curves.easeInOut,
-      ));
+      _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _fadeAnimationController,
+          curve: Curves.easeInOut,
+        ),
+      );
 
       _fadeAnimationController.forward();
       _staggerAnimationController.forward();
-      
+
       debugPrint('$_logTag: Animations initialized successfully');
     } catch (e) {
       debugPrint('$_logTag: Error initializing animations: $e');
@@ -78,18 +75,16 @@ class _SelectTemplateState extends State<SelectTemplate>
     _slideAnimations = List.generate(count, (index) {
       final startTime = (index * 0.1).clamp(0.0, 0.7);
       final endTime = (0.8 + (index * 0.05)).clamp(startTime + 0.1, 1.0);
-      
+
       return Tween<Offset>(
         begin: const Offset(0.3, 0),
         end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _staggerAnimationController,
-        curve: Interval(
-          startTime,
-          endTime,
-          curve: Curves.easeOutCubic,
+      ).animate(
+        CurvedAnimation(
+          parent: _staggerAnimationController,
+          curve: Interval(startTime, endTime, curve: Curves.easeOutCubic),
         ),
-      ));
+      );
     });
   }
 
@@ -99,15 +94,20 @@ class _SelectTemplateState extends State<SelectTemplate>
       if (query.isEmpty) {
         _filteredTemplates = List.from(context.read<UserPresenter>().templates);
       } else {
-        _filteredTemplates = context
-            .read<UserPresenter>()
-            .templates
-            .where((template) =>
-                template.name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
+        _filteredTemplates =
+            context
+                .read<UserPresenter>()
+                .templates
+                .where(
+                  (template) =>
+                      template.name.toLowerCase().contains(query.toLowerCase()),
+                )
+                .toList();
       }
     });
-    debugPrint('$_logTag: Filtered ${_filteredTemplates.length} templates for query: "$query"');
+    debugPrint(
+      '$_logTag: Filtered ${_filteredTemplates.length} templates for query: "$query"',
+    );
   }
 
   void _toggleSearch() {
@@ -124,11 +124,7 @@ class _SelectTemplateState extends State<SelectTemplate>
   void _navigateToSendTemplate(dynamic template) {
     try {
       HapticFeedback.lightImpact();
-      Navigator.pushNamed(
-        context,
-        '/sendTemplate',
-        arguments: template,
-      );
+      Navigator.pushNamed(context, '/sendTemplate', arguments: template);
       debugPrint('$_logTag: Navigating to sendTemplate with: ${template.name}');
     } catch (e) {
       debugPrint('$_logTag: Navigation error: $e');
@@ -139,7 +135,7 @@ class _SelectTemplateState extends State<SelectTemplate>
   Future<void> _deleteTemplate(dynamic template) async {
     try {
       HapticFeedback.mediumImpact();
-      
+
       final confirmed = await _showDeleteConfirmationDialog(template.name);
       if (!confirmed) {
         debugPrint('$_logTag: Template deletion cancelled by user');
@@ -147,12 +143,12 @@ class _SelectTemplateState extends State<SelectTemplate>
       }
 
       await context.read<UserPresenter>().removeTemplate(template);
-      
+
       // Update filtered templates list
       setState(() {
         _filteredTemplates.remove(template);
       });
-      
+
       _showSuccessSnackBar('Plantilla "${template.name}" eliminada');
       debugPrint('$_logTag: Template deleted successfully: ${template.name}');
     } catch (e) {
@@ -163,67 +159,68 @@ class _SelectTemplateState extends State<SelectTemplate>
 
   Future<bool> _showDeleteConfirmationDialog(String templateName) async {
     return await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        final colorScheme = Theme.of(context).colorScheme;
-        return AlertDialog(
-          backgroundColor: colorScheme.surface,
-          surfaceTintColor: colorScheme.surfaceTint,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: colorScheme.error,
-                size: 24,
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            final colorScheme = Theme.of(context).colorScheme;
+            return AlertDialog(
+              backgroundColor: colorScheme.surface,
+              surfaceTintColor: colorScheme.surfaceTint,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-              const SizedBox(width: 12),
-              Text(
-                'Confirmar eliminación',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.onSurface,
-                ),
+              title: Row(
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: colorScheme.error,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Confirmar eliminación',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          content: Text(
-            '¿Estás seguro de que deseas eliminar la plantilla "$templateName"? Esta acción no se puede deshacer.',
-            style: TextStyle(
-              fontSize: 16,
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(
-                'Cancelar',
+              content: Text(
+                '¿Estás seguro de que deseas eliminar la plantilla "$templateName"? Esta acción no se puede deshacer.',
                 style: TextStyle(
+                  fontSize: 16,
                   color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
                 ),
               ),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              style: FilledButton.styleFrom(
-                backgroundColor: colorScheme.error,
-                foregroundColor: colorScheme.onError,
-              ),
-              child: const Text(
-                'Eliminar',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
-        );
-      },
-    ) ?? false;
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(
+                    'Cancelar',
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colorScheme.error,
+                    foregroundColor: colorScheme.onError,
+                  ),
+                  child: const Text(
+                    'Eliminar',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 
   void _showErrorSnackBar(String message) {
@@ -233,7 +230,9 @@ class _SelectTemplateState extends State<SelectTemplate>
           content: Text(message),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Theme.of(context).colorScheme.error,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     }
@@ -246,7 +245,9 @@ class _SelectTemplateState extends State<SelectTemplate>
           content: Text(message),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.green,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     }
@@ -267,8 +268,10 @@ class _SelectTemplateState extends State<SelectTemplate>
     final colorScheme = themeData.colorScheme;
     final size = MediaQuery.sizeOf(context);
     final isCompactHeight = size.height < 850;
-    
-    debugPrint('$_logTag: Building UI - Screen size: ${size.width}x${size.height}, Compact: $isCompactHeight');
+
+    debugPrint(
+      '$_logTag: Building UI - Screen size: ${size.width}x${size.height}, Compact: $isCompactHeight',
+    );
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -288,7 +291,10 @@ class _SelectTemplateState extends State<SelectTemplate>
     );
   }
 
-  PreferredSizeWidget _buildAppBar(ColorScheme colorScheme, bool isCompactHeight) {
+  PreferredSizeWidget _buildAppBar(
+    ColorScheme colorScheme,
+    bool isCompactHeight,
+  ) {
     return AppBar(
       elevation: 0,
       centerTitle: true,
@@ -338,9 +344,10 @@ class _SelectTemplateState extends State<SelectTemplate>
       ],
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: colorScheme.brightness == Brightness.light
-            ? Brightness.dark
-            : Brightness.light,
+        statusBarIconBrightness:
+            colorScheme.brightness == Brightness.light
+                ? Brightness.dark
+                : Brightness.light,
       ),
     );
   }
@@ -373,19 +380,20 @@ class _SelectTemplateState extends State<SelectTemplate>
               color: colorScheme.onSurfaceVariant,
               size: isCompactHeight ? 20 : 22,
             ),
-            suffixIcon: _searchQuery.isNotEmpty
-                ? IconButton(
-                    onPressed: () {
-                      _searchController.clear();
-                      _filterTemplates('');
-                    },
-                    icon: Icon(
-                      Icons.clear_rounded,
-                      color: colorScheme.onSurfaceVariant,
-                      size: isCompactHeight ? 18 : 20,
-                    ),
-                  )
-                : null,
+            suffixIcon:
+                _searchQuery.isNotEmpty
+                    ? IconButton(
+                      onPressed: () {
+                        _searchController.clear();
+                        _filterTemplates('');
+                      },
+                      icon: Icon(
+                        Icons.clear_rounded,
+                        color: colorScheme.onSurfaceVariant,
+                        size: isCompactHeight ? 18 : 20,
+                      ),
+                    )
+                    : null,
             border: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16,
@@ -424,7 +432,11 @@ class _SelectTemplateState extends State<SelectTemplate>
     );
   }
 
-  Widget _buildTemplateList(ColorScheme colorScheme, Size size, bool isCompactHeight) {
+  Widget _buildTemplateList(
+    ColorScheme colorScheme,
+    Size size,
+    bool isCompactHeight,
+  ) {
     if (_filteredTemplates.isEmpty) {
       return _buildEmptyState(colorScheme, isCompactHeight);
     }
@@ -438,22 +450,37 @@ class _SelectTemplateState extends State<SelectTemplate>
       itemCount: _filteredTemplates.length,
       itemBuilder: (context, index) {
         final template = _filteredTemplates[index];
-        final animationIndex = index < _slideAnimations.length ? index : _slideAnimations.length - 1;
-        
+        final animationIndex =
+            index < _slideAnimations.length
+                ? index
+                : _slideAnimations.length - 1;
+
         return SlideTransition(
           position: _slideAnimations[animationIndex],
           child: AnimatedContainer(
             duration: Duration(milliseconds: 200 + (index * 50)),
             curve: Curves.easeOutCubic,
             margin: EdgeInsets.only(bottom: isCompactHeight ? 8 : 12),
-            child: _buildTemplateCard(template, colorScheme, size, isCompactHeight, index),
+            child: _buildTemplateCard(
+              template,
+              colorScheme,
+              size,
+              isCompactHeight,
+              index,
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildTemplateCard(dynamic template, ColorScheme colorScheme, Size size, bool isCompactHeight, int index) {
+  Widget _buildTemplateCard(
+    dynamic template,
+    ColorScheme colorScheme,
+    Size size,
+    bool isCompactHeight,
+    int index,
+  ) {
     return Material(
       elevation: 2,
       borderRadius: BorderRadius.circular(16),
@@ -461,8 +488,8 @@ class _SelectTemplateState extends State<SelectTemplate>
       child: InkWell(
         onTap: () => _navigateToSendTemplate(template),
         borderRadius: BorderRadius.circular(16),
-        splashColor: colorScheme.primary.withValues(alpha:  0.1),
-        highlightColor: colorScheme.primary.withValues(alpha:  0.05),
+        splashColor: colorScheme.primary.withValues(alpha: 0.1),
+        highlightColor: colorScheme.primary.withValues(alpha: 0.05),
         child: Container(
           width: size.width,
           padding: EdgeInsets.all(isCompactHeight ? 16 : 20),
@@ -521,7 +548,9 @@ class _SelectTemplateState extends State<SelectTemplate>
                 ),
                 tooltip: 'Eliminar plantilla',
                 style: IconButton.styleFrom(
-                  backgroundColor: colorScheme.errorContainer.withValues(alpha:  0.1),
+                  backgroundColor: colorScheme.errorContainer.withValues(
+                    alpha: 0.1,
+                  ),
                   foregroundColor: colorScheme.error,
                   minimumSize: Size(
                     isCompactHeight ? 36 : 40,
@@ -548,13 +577,15 @@ class _SelectTemplateState extends State<SelectTemplate>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            _searchQuery.isNotEmpty ? Icons.search_off_rounded : Icons.inventory_2_outlined,
+            _searchQuery.isNotEmpty
+                ? Icons.search_off_rounded
+                : Icons.inventory_2_outlined,
             size: isCompactHeight ? 64 : 72,
-            color: colorScheme.onSurfaceVariant.withValues(alpha:  0.6),
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
           ),
           SizedBox(height: isCompactHeight ? 16 : 24),
           Text(
-            _searchQuery.isNotEmpty 
+            _searchQuery.isNotEmpty
                 ? 'No se encontraron plantillas'
                 : 'No hay plantillas disponibles',
             style: TextStyle(
@@ -565,7 +596,7 @@ class _SelectTemplateState extends State<SelectTemplate>
           ),
           SizedBox(height: isCompactHeight ? 8 : 12),
           Text(
-            _searchQuery.isNotEmpty 
+            _searchQuery.isNotEmpty
                 ? 'Intenta con otros términos de búsqueda'
                 : 'Crea tu primera plantilla para comenzar',
             style: TextStyle(

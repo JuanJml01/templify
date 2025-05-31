@@ -6,6 +6,7 @@ import 'package:templify/view/create_template.dart';
 import 'package:templify/view/home.dart';
 import 'package:templify/view/select_template.dart';
 import 'package:templify/view/send_templates.dart';
+import 'package:templify/view/settings.dart';
 
 Future<void> main() async {
   const String loggerId = "main";
@@ -44,9 +45,7 @@ Future<void> main() async {
 
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: userPresenter),
-      ],
+      providers: [ChangeNotifierProvider.value(value: userPresenter)],
       child: const MyApp(),
     ),
   );
@@ -77,6 +76,7 @@ class MyApp extends StatelessWidget {
         "/createTemplate": (context) => const CreateTemplate(),
         "/selectTemplate": (context) => const SelectTemplate(),
         "/sendTemplate": (context) => const SendTemplates(),
+        "/settings": (context) => const Settings(),
       },
     );
   }

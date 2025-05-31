@@ -4,8 +4,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:templify/model/template.dart';
 import 'dart:developer' as developer;
 
-/// Enhanced send templates screen with Material Design 3 principles
-/// and comprehensive UX improvements - Full page scrollable
 class SendTemplates extends StatefulWidget {
   const SendTemplates({super.key});
 
@@ -15,7 +13,6 @@ class SendTemplates extends StatefulWidget {
 
 class _SendTemplatesState extends State<SendTemplates>
     with TickerProviderStateMixin {
-  // Controllers and state management
   late TextEditingController _previewController;
   late Template _template;
   late List<String> _fields;
@@ -23,19 +20,16 @@ class _SendTemplatesState extends State<SendTemplates>
   late List<FocusNode> _focusNodes;
   late ScrollController _scrollController;
 
-  // Animation controllers
   late AnimationController _fadeAnimationController;
   late AnimationController _slideAnimationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  // State variables
   String _processedText = "";
   bool _isComplete = false;
   bool _isLoading = false;
   bool _isInitialized = false;
 
-  // Responsive design constants
   static const double _compactHeightThreshold = 850.0;
   static const double _defaultPadding = 16.0;
   static const double _compactPadding = 12.0;
@@ -49,7 +43,6 @@ class _SendTemplatesState extends State<SendTemplates>
     _logScreenInitialization();
   }
 
-  /// Initialize core components and controllers
   void _initializeComponents() {
     try {
       _previewController = TextEditingController();
@@ -61,7 +54,6 @@ class _SendTemplatesState extends State<SendTemplates>
     }
   }
 
-  /// Setup animation controllers and animations
   void _setupAnimations() {
     try {
       _fadeAnimationController = AnimationController(
@@ -91,7 +83,6 @@ class _SendTemplatesState extends State<SendTemplates>
         ),
       );
 
-      // Start animations
       _fadeAnimationController.forward();
       _slideAnimationController.forward();
 
@@ -101,7 +92,6 @@ class _SendTemplatesState extends State<SendTemplates>
     }
   }
 
-  /// Initialize template-specific data after context is available
   void _initializeTemplateData() {
     try {
       _template = ModalRoute.of(context)!.settings.arguments as Template;
@@ -136,21 +126,15 @@ class _SendTemplatesState extends State<SendTemplates>
     }
   }
 
-  /// Scroll to field when it gets focus
   void _scrollToField(int fieldIndex) {
     if (!mounted) return;
 
-    // Calculate position: header + preview + field position
-    const headerHeight = 120.0; // Approximate header height
-    const previewHeight = 200.0; // Fixed preview height
-    const inputFieldHeight =
-        80.0; // Approximate input field height with padding
+    const headerHeight = 120.0;
+    const previewHeight = 200.0;
+    const inputFieldHeight = 80.0;
 
     final targetOffset =
-        headerHeight +
-        previewHeight +
-        (fieldIndex * inputFieldHeight) -
-        100; // Extra offset to show field comfortably
+        headerHeight + previewHeight + (fieldIndex * inputFieldHeight) - 100;
 
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted && _scrollController.hasClients) {
@@ -244,7 +228,6 @@ class _SendTemplatesState extends State<SendTemplates>
     }
   }
 
-  /// Handle errors with logging and user feedback
   void _handleError(String message, dynamic error) {
     developer.log('Error: $message - $error', level: 1000);
 
@@ -255,7 +238,6 @@ class _SendTemplatesState extends State<SendTemplates>
     }
   }
 
-  /// Show snackbar with customized styling
   void _showSnackBar(String message, {bool isError = false}) {
     if (!mounted) return;
 
@@ -281,19 +263,17 @@ class _SendTemplatesState extends State<SendTemplates>
           borderRadius: BorderRadius.circular(_borderRadius / 2),
         ),
         duration: Duration(seconds: isError ? 4 : 2),
-        margin: const EdgeInsets.only(bottom: 80), // Avoid FAB overlap
+        margin: const EdgeInsets.only(bottom: 80),
       ),
     );
   }
 
-  /// Log screen initialization for debugging
   void _logScreenInitialization() {
     developer.log('SendTemplates screen initialized', time: DateTime.now());
   }
 
   @override
   Widget build(BuildContext context) {
-    // Initialize template data only once
     if (!_isInitialized) {
       _initializeTemplateData();
       _isInitialized = true;
@@ -330,7 +310,6 @@ class _SendTemplatesState extends State<SendTemplates>
     );
   }
 
-  /// Build enhanced app bar with Material Design 3 styling
   PreferredSizeWidget _buildAppBar(ColorScheme colorScheme, bool isCompact) {
     return AppBar(
       elevation: 0,
@@ -373,7 +352,6 @@ class _SendTemplatesState extends State<SendTemplates>
     );
   }
 
-  /// Build completely scrollable body
   Widget _buildScrollableBody(
     ThemeData theme,
     ColorScheme colorScheme,
@@ -388,7 +366,7 @@ class _SendTemplatesState extends State<SendTemplates>
           left: padding,
           right: padding,
           top: padding,
-          bottom: padding + 80, // Extra bottom padding for FAB
+          bottom: padding + 80,
         ),
         child: Column(
           children: [
@@ -408,7 +386,6 @@ class _SendTemplatesState extends State<SendTemplates>
     );
   }
 
-  /// Build template header with name and description
   Widget _buildTemplateHeader(ColorScheme colorScheme, double padding) {
     return Container(
       width: double.infinity,
@@ -458,10 +435,9 @@ class _SendTemplatesState extends State<SendTemplates>
     );
   }
 
-  /// Build preview section with live updates
   Widget _buildPreviewSection(ColorScheme colorScheme, double padding) {
     return Container(
-      height: 200, // Fixed height for preview
+      height: 200,
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(_borderRadius),
@@ -534,7 +510,6 @@ class _SendTemplatesState extends State<SendTemplates>
     );
   }
 
-  /// Build input fields section
   Widget _buildInputFieldsSection(ColorScheme colorScheme, double padding) {
     return Container(
       decoration: BoxDecoration(
@@ -608,7 +583,6 @@ class _SendTemplatesState extends State<SendTemplates>
     );
   }
 
-  /// Build individual input field with enhanced styling
   Widget _buildInputField(int index, ColorScheme colorScheme) {
     final fieldName =
         _fields[index]; // Field names come without the "/" from getFields()
@@ -663,7 +637,6 @@ class _SendTemplatesState extends State<SendTemplates>
     );
   }
 
-  /// Build floating action button with enhanced styling
   Widget _buildFloatingActionButton(ColorScheme colorScheme) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),

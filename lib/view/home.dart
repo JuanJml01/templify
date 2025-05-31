@@ -3,8 +3,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 
-/// Enhanced Home screen with Google Material Design 3 principles
-/// Provides template management functionality with animations and responsive design
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -16,6 +15,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late AnimationController _scaleController;
+  late AnimationController _rotateController;
 
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -36,25 +36,30 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     _logScreenInitialization();
   }
 
-  /// Initialize all animation controllers and animations
+
   void _initializeAnimations() {
     try {
-      // Fade animation for overall appearance
+      
       _fadeController = AnimationController(
         duration: const Duration(milliseconds: 800),
         vsync: this,
       );
 
-      // Slide animation for staggered button appearance
+      
       _slideController = AnimationController(
         duration: const Duration(milliseconds: 1000),
         vsync: this,
       );
 
-      // Scale animation for button interactions
+      
       _scaleController = AnimationController(
         duration: const Duration(milliseconds: 150),
         vsync: this,
+      );
+
+      _rotateController = AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 170),
       );
 
       _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -72,7 +77,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
       );
 
-      // Start animations
+      
       _fadeController.forward();
       _slideController.forward();
 
@@ -87,7 +92,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-  /// Log screen initialization details
+
   void _logScreenInitialization() {
     final size = MediaQuery.sizeOf(context);
     developer.log(
@@ -96,7 +101,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  /// Handle create template action with error handling
+
   Future<void> _handleCreateTemplate() async {
     try {
       developer.log('Create template button pressed', name: 'Home');
@@ -106,8 +111,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         _errorMessage = null;
       });
 
-      // Simulate template creation logic
-      await Future.delayed(const Duration(milliseconds: 500));
+
+      await Future.delayed(const Duration(milliseconds: 200));
 
       final size = MediaQuery.sizeOf(context);
       developer.log(
@@ -130,7 +135,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-  /// Handle send message action with error handling
+
   Future<void> _handleSendMessage() async {
     try {
       developer.log('Send message button pressed', name: 'Home');
@@ -141,7 +146,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       });
 
       // Simulate message sending logic
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 200));
 
       final size = MediaQuery.sizeOf(context);
       developer.log(
@@ -150,8 +155,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       );
 
       Navigator.pushNamed(context, "/selectTemplate");
-
-
     } catch (e) {
       developer.log('Error in message sending: $e', name: 'Home', level: 1000);
       _setError('Failed to send message');
@@ -162,13 +165,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-  /// Set error message and log it
+
   void _setError(String message) {
     setState(() => _errorMessage = message);
     developer.log('Error set: $message', name: 'Home', level: 900);
   }
 
-  /// Dismiss error message
+
   void _dismissError() {
     setState(() => _errorMessage = null);
     developer.log('Error dismissed', name: 'Home');
@@ -176,6 +179,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _rotateController.dispose();
     _fadeController.dispose();
     _slideController.dispose();
     _scaleController.dispose();
@@ -190,6 +194,21 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     final size = MediaQuery.sizeOf(context);
 
     return Scaffold(
+      appBar: AppBar(
+        leading: RotationTransition(
+          turns: _rotateController,
+          child: IconButton(
+            color: colorScheme.inverseSurface,
+            onPressed: () {
+              _rotateController.forward().then((_) {
+                _rotateController.reset();
+                Navigator.pushNamed(context, "/settings");
+              });
+            },
+            icon: Icon(Icons.settings, size: 40),
+          ),
+        ),
+      ),
       backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: FadeTransition(
@@ -229,7 +248,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  /// Build animated header section
+
   Widget _buildHeader(ThemeData theme, Size size) {
     return SlideTransition(
       position: _slideAnimation,
@@ -295,7 +314,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  /// Build action buttons with animations
+
   Widget _buildActionButtons(ThemeData theme, Size size) {
     return SlideTransition(
       position: _slideAnimation,
@@ -325,7 +344,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  /// Build individual animated button
+ 
   Widget _buildAnimatedButton({
     required VoidCallback onPressed,
     required Color backgroundColor,
@@ -408,7 +427,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  /// Build error display widget
+ 
   Widget _buildErrorDisplay(ThemeData theme) {
     if (_errorMessage == null) return const SizedBox.shrink();
 
