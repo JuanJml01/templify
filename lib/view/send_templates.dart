@@ -5,7 +5,7 @@ import 'package:templify/model/template.dart';
 import 'dart:developer' as developer;
 
 /// Enhanced send templates screen with Material Design 3 principles
-/// and comprehensive UX improvements
+/// and comprehensive UX improvements - Full page scrollable
 class SendTemplates extends StatefulWidget {
   const SendTemplates({super.key});
 
@@ -21,6 +21,7 @@ class _SendTemplatesState extends State<SendTemplates>
   late List<String> _fields;
   late List<TextEditingController> _inputControllers;
   late List<FocusNode> _focusNodes;
+  late ScrollController _scrollController;
 
   // Animation controllers
   late AnimationController _fadeAnimationController;
@@ -52,6 +53,7 @@ class _SendTemplatesState extends State<SendTemplates>
   void _initializeComponents() {
     try {
       _previewController = TextEditingController();
+      _scrollController = ScrollController();
       _isLoading = false;
       developer.log('SendTemplates components initialized successfully');
     } catch (e) {
@@ -112,6 +114,15 @@ class _SendTemplatesState extends State<SendTemplates>
 
       _focusNodes = List.generate(_fields.length, (index) => FocusNode());
 
+      // Add listeners to focus nodes to auto-scroll when focused
+      for (int i = 0; i < _focusNodes.length; i++) {
+        _focusNodes[i].addListener(() {
+          if (_focusNodes[i].hasFocus) {
+            _scrollToField(i);
+          }
+        });
+      }
+
       if (_previewController.text.isEmpty) {
         _previewController.text = _template.text;
       }
@@ -123,6 +134,33 @@ class _SendTemplatesState extends State<SendTemplates>
     } catch (e) {
       _handleError('Failed to initialize template data', e);
     }
+  }
+
+  /// Scroll to field when it gets focus
+  void _scrollToField(int fieldIndex) {
+    if (!mounted) return;
+
+    // Calculate position: header + preview + field position
+    const headerHeight = 120.0; // Approximate header height
+    const previewHeight = 200.0; // Fixed preview height
+    const inputFieldHeight =
+        80.0; // Approximate input field height with padding
+
+    final targetOffset =
+        headerHeight +
+        previewHeight +
+        (fieldIndex * inputFieldHeight) -
+        100; // Extra offset to show field comfortably
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted && _scrollController.hasClients) {
+        _scrollController.animateTo(
+          targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   /// Process template with user inputs and update preview
@@ -243,6 +281,7 @@ class _SendTemplatesState extends State<SendTemplates>
           borderRadius: BorderRadius.circular(_borderRadius / 2),
         ),
         duration: Duration(seconds: isError ? 4 : 2),
+        margin: const EdgeInsets.only(bottom: 80), // Avoid FAB overlap
       ),
     );
   }
@@ -278,7 +317,13 @@ class _SendTemplatesState extends State<SendTemplates>
         opacity: _fadeAnimation,
         child: SlideTransition(
           position: _slideAnimation,
-          child: _buildBody(theme, colorScheme, size, padding, isCompact),
+          child: _buildScrollableBody(
+            theme,
+            colorScheme,
+            size,
+            padding,
+            isCompact,
+          ),
         ),
       ),
       floatingActionButton: _buildFloatingActionButton(colorScheme),
@@ -328,8 +373,8 @@ class _SendTemplatesState extends State<SendTemplates>
     );
   }
 
-  /// Build main body with vertical layout (preview above inputs)
-  Widget _buildBody(
+  /// Build completely scrollable body
+  Widget _buildScrollableBody(
     ThemeData theme,
     ColorScheme colorScheme,
     Size size,
@@ -337,28 +382,28 @@ class _SendTemplatesState extends State<SendTemplates>
     bool isCompact,
   ) {
     return SafeArea(
-      child: Column(
-        children: [
-          // Template Header
-          Padding(
-            padding: EdgeInsets.fromLTRB(padding, padding, padding, 0),
-            child: _buildTemplateHeader(colorScheme, padding),
-          ),
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        padding: EdgeInsets.only(
+          left: padding,
+          right: padding,
+          top: padding,
+          bottom: padding + 80, // Extra bottom padding for FAB
+        ),
+        child: Column(
+          children: [
+            // Template Header
+            _buildTemplateHeader(colorScheme, padding),
+            SizedBox(height: padding),
 
-          // Preview Section (fixed at top)
-          Padding(
-            padding: EdgeInsets.all(padding),
-            child: _buildPreviewSection(colorScheme, padding),
-          ),
+            // Preview Section
+            _buildPreviewSection(colorScheme, padding),
+            SizedBox(height: padding),
 
-          // Input Section (scrollable)
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(padding, 0, padding, padding),
-              child: _buildScrollableInputSection(colorScheme, padding),
-            ),
-          ),
-        ],
+            // Input Fields Section
+            _buildInputFieldsSection(colorScheme, padding),
+          ],
+        ),
       ),
     );
   }
@@ -409,141 +454,6 @@ class _SendTemplatesState extends State<SendTemplates>
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  /// Build scrollable input section to prevent FAB overlap
-  Widget _buildScrollableInputSection(ColorScheme colorScheme, double padding) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(_borderRadius),
-        border: Border.all(
-          color: colorScheme.outline.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Padding(
-            padding: EdgeInsets.all(padding),
-            child: Row(
-              children: [
-                Icon(Icons.edit_outlined, color: colorScheme.primary, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  'Completar campos (${_fields.length})',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurface,
-                    letterSpacing: 0.15,
-                  ),
-                ),
-                const Spacer(),
-                if (_isComplete)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'Completo',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          Divider(height: 1, color: colorScheme.outline.withValues(alpha: 0.2)),
-
-          // Scrollable input fields
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(padding),
-              child: Column(
-                children: [
-                  ...List.generate(_fields.length, (index) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        bottom: index < _fields.length - 1 ? padding : 0,
-                      ),
-                      child: _buildInputField(index, colorScheme),
-                    );
-                  }),
-                  // Extra space to prevent FAB overlap
-                  const SizedBox(height: 80),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Build individual input field with enhanced styling
-  Widget _buildInputField(int index, ColorScheme colorScheme) {
-    final fieldName =
-        _fields[index]; // Field names come without the "/" from getFields()
-
-    return TextField(
-      controller: _inputControllers[index],
-      focusNode: _focusNodes[index],
-      onChanged: (_) => _processTemplate(),
-      onTapOutside: (_) => _focusNodes[index].unfocus(),
-      maxLines: 1,
-      textCapitalization: TextCapitalization.sentences,
-      decoration: InputDecoration(
-        labelText: fieldName.toUpperCase(),
-        hintText: 'Ingresa $fieldName',
-        prefixIcon: Icon(
-          _getFieldIcon(fieldName),
-          color: colorScheme.primary.withValues(alpha: 0.7),
-          size: 20,
-        ),
-        filled: true,
-        fillColor: colorScheme.surface,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_borderRadius / 2),
-          borderSide: BorderSide(
-            color: colorScheme.outline.withValues(alpha: 0.3),
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_borderRadius / 2),
-          borderSide: BorderSide(
-            color: colorScheme.outline.withValues(alpha: 0.3),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_borderRadius / 2),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_borderRadius / 2),
-          borderSide: BorderSide(color: colorScheme.error, width: 2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-      ),
-      style: TextStyle(
-        fontSize: 16,
-        color: colorScheme.onSurface,
-        letterSpacing: 0.15,
       ),
     );
   }
@@ -624,6 +534,135 @@ class _SendTemplatesState extends State<SendTemplates>
     );
   }
 
+  /// Build input fields section
+  Widget _buildInputFieldsSection(ColorScheme colorScheme, double padding) {
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(_borderRadius),
+        border: Border.all(
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Padding(
+            padding: EdgeInsets.all(padding),
+            child: Row(
+              children: [
+                Icon(Icons.edit_outlined, color: colorScheme.primary, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Completar campos (${_fields.length})',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface,
+                    letterSpacing: 0.15,
+                  ),
+                ),
+                const Spacer(),
+                if (_isComplete)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'Completo',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Divider(height: 1, color: colorScheme.outline.withValues(alpha: 0.2)),
+
+          // Input fields
+          Padding(
+            padding: EdgeInsets.all(padding),
+            child: Column(
+              children: List.generate(_fields.length, (index) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom: index < _fields.length - 1 ? padding : 0,
+                  ),
+                  child: _buildInputField(index, colorScheme),
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build individual input field with enhanced styling
+  Widget _buildInputField(int index, ColorScheme colorScheme) {
+    final fieldName =
+        _fields[index]; // Field names come without the "/" from getFields()
+
+    return TextField(
+      controller: _inputControllers[index],
+      focusNode: _focusNodes[index],
+      onChanged: (_) => _processTemplate(),
+      onTapOutside: (_) => _focusNodes[index].unfocus(),
+      maxLines: 1,
+      textCapitalization: TextCapitalization.sentences,
+      decoration: InputDecoration(
+        labelText: fieldName.toUpperCase(),
+        hintText: 'Ingresa $fieldName',
+        prefixIcon: Icon(
+          _getFieldIcon(fieldName),
+          color: colorScheme.primary.withValues(alpha: 0.7),
+          size: 20,
+        ),
+        filled: true,
+        fillColor: colorScheme.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(_borderRadius / 2),
+          borderSide: BorderSide(
+            color: colorScheme.outline.withValues(alpha: 0.3),
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(_borderRadius / 2),
+          borderSide: BorderSide(
+            color: colorScheme.outline.withValues(alpha: 0.3),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(_borderRadius / 2),
+          borderSide: BorderSide(color: colorScheme.primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(_borderRadius / 2),
+          borderSide: BorderSide(color: colorScheme.error, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+      ),
+      style: TextStyle(
+        fontSize: 16,
+        color: colorScheme.onSurface,
+        letterSpacing: 0.15,
+      ),
+    );
+  }
+
   /// Build floating action button with enhanced styling
   Widget _buildFloatingActionButton(ColorScheme colorScheme) {
     return AnimatedContainer(
@@ -698,6 +737,7 @@ class _SendTemplatesState extends State<SendTemplates>
   void dispose() {
     try {
       _previewController.dispose();
+      _scrollController.dispose();
 
       for (var controller in _inputControllers) {
         controller.dispose();
